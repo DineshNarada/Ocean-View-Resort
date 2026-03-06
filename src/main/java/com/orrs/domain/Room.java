@@ -1,16 +1,19 @@
 package com.orrs.domain;
 
+import java.time.LocalDateTime;
+
 /**
  * Room Domain Class
- * Represents a room entity in the system
+ * Represents an individual room entity in the system
  */
 public class Room {
     
     private int roomId;
     private String roomNumber;
-    private int roomTypeId;
+    private int roomTypeId;  // Foreign key to RoomType
     private int floor;
-    private String status;
+    private RoomStatus status;
+    private LocalDateTime createdAt;
     
     /**
      * Default constructor
@@ -21,7 +24,7 @@ public class Room {
     /**
      * Constructor with all fields
      */
-    public Room(int roomId, String roomNumber, int roomTypeId, int floor, String status) {
+    public Room(int roomId, String roomNumber, int roomTypeId, int floor, RoomStatus status) {
         this.roomId = roomId;
         this.roomNumber = roomNumber;
         this.roomTypeId = roomTypeId;
@@ -63,12 +66,24 @@ public class Room {
         this.floor = floor;
     }
     
-    public String getStatus() {
+    public RoomStatus getStatus() {
         return status;
     }
     
-    public void setStatus(String status) {
+    public void setStatus(RoomStatus status) {
         this.status = status;
+    }
+    
+    public void setStatus(String statusStr) {
+        this.status = RoomStatus.valueOf(statusStr);
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
     
     @Override
@@ -78,7 +93,15 @@ public class Room {
                 ", roomNumber='" + roomNumber + '\'' +
                 ", roomTypeId=" + roomTypeId +
                 ", floor=" + floor +
-                ", status='" + status + '\'' +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
                 '}';
+    }
+    
+    /**
+     * Enumeration for room status
+     */
+    public enum RoomStatus {
+        AVAILABLE, OCCUPIED, MAINTENANCE
     }
 }
