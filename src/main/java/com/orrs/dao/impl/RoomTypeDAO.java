@@ -59,7 +59,7 @@ public class RoomTypeDAO implements IRoomTypeDAO {
     @Override
     public List<RoomType> readAll() throws Exception {
         List<RoomType> roomTypes = new ArrayList<>();
-        String sql = "SELECT * FROM RoomType ORDER BY typeName";
+        String sql = "SELECT * FROM RoomType ORDER BY typeName ASC";
         
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();

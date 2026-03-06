@@ -147,7 +147,7 @@ public class GuestDAO implements IGuestDAO {
     @Override
     public List<Guest> searchByName(String name) throws Exception {
         List<Guest> guests = new ArrayList<>();
-        String sql = "SELECT * FROM Guest WHERE name LIKE ? ORDER BY name";
+        String sql = "SELECT * FROM Guest WHERE name LIKE ? ORDER BY name ASC";
         
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

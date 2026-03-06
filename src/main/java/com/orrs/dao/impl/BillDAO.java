@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Bill DAO Implementation
+ * Handles all database operations for Bill entity
  */
 public class BillDAO implements IBillDAO {
     
@@ -16,8 +17,8 @@ public class BillDAO implements IBillDAO {
     
     @Override
     public void create(Bill bill) throws Exception {
-        String sql = "INSERT INTO Bill (reservationId, subtotal, tax, discount) " +
-                    "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Bill (reservationId, subtotal, tax, discount, paymentStatus) " +
+                    "VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -26,6 +27,7 @@ public class BillDAO implements IBillDAO {
             stmt.setBigDecimal(2, bill.getSubtotal());
             stmt.setBigDecimal(3, bill.getTax());
             stmt.setBigDecimal(4, bill.getDiscount());
+            stmt.setString(5, bill.getPaymentStatus().toString());
             
             stmt.executeUpdate();
             
@@ -83,7 +85,11 @@ public class BillDAO implements IBillDAO {
             stmt.setBigDecimal(3, bill.getTax());
             stmt.setBigDecimal(4, bill.getDiscount());
             stmt.setString(5, bill.getPaymentStatus().toString());
-            stmt.setTimestamp(6, bill.getPaymentDate() != null ? Timestamp.valueOf(bill.getPaymentDate()) : null);
+            if (bill.getPaymentDate() != null) {
+                stmt.setTimestamp(6, java.sql.Timestamp.valueOf(bill.getPaymentDate()));
+            } else {
+                stmt.setNull(6, Types.TIMESTAMP);
+            }
             stmt.setInt(7, bill.getBillId());
             
             stmt.executeUpdate();
@@ -142,7 +148,7 @@ public class BillDAO implements IBillDAO {
     }
     
     /**
-     * Map ResultSet to Bill object
+     * Map ResultSet row to Bill object
      */
     private Bill mapResultSetToBill(ResultSet rs) throws SQLException {
         Bill bill = new Bill();
@@ -153,9 +159,10 @@ public class BillDAO implements IBillDAO {
         bill.setDiscount(rs.getBigDecimal("discount"));
         bill.setTotalAmount(rs.getBigDecimal("totalAmount"));
         bill.setPaymentStatus(rs.getString("paymentStatus"));
-        Timestamp paymentDate = rs.getTimestamp("paymentDate");
-        bill.setPaymentDate(paymentDate != null ? paymentDate.toLocalDateTime() : null);
-        bill.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+        java.sql.Timestamp paymentDate = rs.getTimestamp("paymentDate");
+        if (paymentDate != null) {
+            bill.setPaymentDate(paymentDate.toLocalDateTime());
+        }
         return bill;
     }
 }

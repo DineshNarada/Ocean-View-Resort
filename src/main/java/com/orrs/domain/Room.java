@@ -86,6 +86,13 @@ public class Room {
         this.createdAt = createdAt;
     }
     
+    /**
+     * Helper method to map string to RoomStatus enum
+     */
+    public RoomStatus mapStatus(String statusStr) {
+        return RoomStatus.valueOf(statusStr);
+    }
+    
     @Override
     public String toString() {
         return "Room{" +

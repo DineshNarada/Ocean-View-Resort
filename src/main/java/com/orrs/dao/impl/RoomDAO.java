@@ -59,7 +59,7 @@ public class RoomDAO implements IRoomDAO {
     @Override
     public List<Room> readAll() throws Exception {
         List<Room> rooms = new ArrayList<>();
-        String sql = "SELECT * FROM Room ORDER BY roomNumber";
+        String sql = "SELECT * FROM Room ORDER BY floor ASC, roomNumber ASC";
         
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
@@ -127,7 +127,7 @@ public class RoomDAO implements IRoomDAO {
     @Override
     public List<Room> findByRoomTypeId(int roomTypeId) throws Exception {
         List<Room> rooms = new ArrayList<>();
-        String sql = "SELECT * FROM Room WHERE roomTypeId = ? ORDER BY roomNumber";
+        String sql = "SELECT * FROM Room WHERE roomTypeId = ? ORDER BY floor ASC, roomNumber ASC";
         
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -145,7 +145,7 @@ public class RoomDAO implements IRoomDAO {
     @Override
     public List<Room> findByFloor(int floor) throws Exception {
         List<Room> rooms = new ArrayList<>();
-        String sql = "SELECT * FROM Room WHERE floor = ? ORDER BY roomNumber";
+        String sql = "SELECT * FROM Room WHERE floor = ? ORDER BY roomNumber ASC";
         
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -163,7 +163,7 @@ public class RoomDAO implements IRoomDAO {
     @Override
     public List<Room> findAvailableRooms() throws Exception {
         List<Room> rooms = new ArrayList<>();
-        String sql = "SELECT * FROM Room WHERE status = 'AVAILABLE' ORDER BY roomNumber";
+        String sql = "SELECT * FROM Room WHERE status = 'AVAILABLE' ORDER BY floor ASC, roomNumber ASC";
         
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
@@ -191,7 +191,7 @@ public class RoomDAO implements IRoomDAO {
     }
     
     /**
-     * Map ResultSet to Room object
+     * Map ResultSet row to Room object
      */
     private Room mapResultSetToRoom(ResultSet rs) throws SQLException {
         Room room = new Room();
@@ -199,8 +199,8 @@ public class RoomDAO implements IRoomDAO {
         room.setRoomNumber(rs.getString("roomNumber"));
         room.setRoomTypeId(rs.getInt("roomTypeId"));
         room.setFloor(rs.getInt("floor"));
-        room.setStatus(rs.getString("status"));
-        room.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+        room.setStatus(room.mapStatus(rs.getString("status")));
+        room.setCreatedAt(rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null);
         return room;
     }
 }
