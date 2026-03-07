@@ -10,11 +10,16 @@ import java.time.temporal.ChronoUnit;
  */
 public class Reservation {
     private int reservationId;
+    private String id;  // For test support
     private String reservationNumber;
     private int guestId;
+    private Guest guest;  // For test support
     private int roomId;  // Reference to specific room, not just room type
+    private RoomType roomType;  // For test support
     private LocalDate checkInDate;
+    private LocalDate checkIn;  // For test support
     private LocalDate checkOutDate;
+    private LocalDate checkOut;  // For test support
     private BigDecimal totalCost;
     private ReservationStatus status;
 
@@ -43,6 +48,24 @@ public class Reservation {
     }
 
     /**
+     * Constructs a Reservation with Guest and RoomType objects (simplified for testing).
+     *
+     * @param id the unique reservation ID
+     * @param guest the Guest object
+     * @param roomType the RoomType object
+     * @param checkIn the check-in date
+     * @param checkOut the check-out date
+     */
+    public Reservation(String id, Guest guest, RoomType roomType, LocalDate checkIn, LocalDate checkOut) {
+        this.id = id;
+        this.guest = guest;
+        this.roomType = roomType;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.status = ReservationStatus.PENDING;
+    }
+
+    /**
      * Calculates the duration of the reservation in nights.
      *
      * @return the number of nights between check-in and check-out
@@ -63,6 +86,10 @@ public class Reservation {
         return reservationId;
     }
 
+    public String getId() {
+        return id != null ? id : reservationNumber;
+    }
+
     public String getReservationNumber() {
         return reservationNumber;
     }
@@ -71,16 +98,32 @@ public class Reservation {
         return guestId;
     }
 
+    public Guest getGuest() {
+        return guest;
+    }
+
     public int getRoomId() {
         return roomId;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
     }
 
     public LocalDate getCheckInDate() {
         return checkInDate;
     }
 
+    public LocalDate getCheckIn() {
+        return checkIn != null ? checkIn : checkInDate;
+    }
+
     public LocalDate getCheckOutDate() {
         return checkOutDate;
+    }
+
+    public LocalDate getCheckOut() {
+        return checkOut != null ? checkOut : checkOutDate;
     }
 
     public BigDecimal getTotalCost() {
@@ -96,6 +139,10 @@ public class Reservation {
         this.reservationId = reservationId;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void setReservationNumber(String reservationNumber) {
         this.reservationNumber = reservationNumber;
     }
@@ -104,16 +151,32 @@ public class Reservation {
         this.guestId = guestId;
     }
 
+    public void setGuest(Guest guest) {
+        this.guest = guest;
+    }
+
     public void setRoomId(int roomId) {
         this.roomId = roomId;
+    }
+
+    public void setRoomType(RoomType roomType) {
+        this.roomType = roomType;
     }
 
     public void setCheckInDate(LocalDate checkInDate) {
         this.checkInDate = checkInDate;
     }
 
+    public void setCheckIn(LocalDate checkIn) {
+        this.checkIn = checkIn;
+    }
+
     public void setCheckOutDate(LocalDate checkOutDate) {
         this.checkOutDate = checkOutDate;
+    }
+
+    public void setCheckOut(LocalDate checkOut) {
+        this.checkOut = checkOut;
     }
 
     public void setTotalCost(BigDecimal totalCost) {
@@ -126,6 +189,9 @@ public class Reservation {
 
     @Override
     public String toString() {
+        if (id != null && guest != null && roomType != null) {
+            return "Reservation{id='" + id + "', guest=" + guest + ", roomType=" + roomType + ", checkIn=" + getCheckIn() + ", checkOut=" + getCheckOut() + ", duration=" + getDuration() + " nights}";
+        }
         return "Reservation{" +
                 "reservationId=" + reservationId +
                 ", reservationNumber='" + reservationNumber + '\'' +

@@ -41,6 +41,19 @@ public class Guest {
         this.country = country;
     }
 
+    /**
+     * Constructs a Guest with simplified details for testing.
+     *
+     * @param name the guest's full name
+     * @param address the guest's address
+     * @param contact the guest's contact (phone number)
+     */
+    public Guest(String name, String address, String contact) {
+        this.name = name;
+        this.address = address;
+        this.phone = contact;  // Use phone field for contact
+    }
+
     // Getters
     public int getGuestId() {
         return guestId;
@@ -55,6 +68,10 @@ public class Guest {
     }
 
     public String getPhone() {
+        return phone;
+    }
+
+    public String getContact() {
         return phone;
     }
 
@@ -91,6 +108,10 @@ public class Guest {
         this.phone = phone;
     }
 
+    public void setContact(String contact) {
+        this.phone = contact;
+    }
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -109,6 +130,10 @@ public class Guest {
 
     @Override
     public String toString() {
+        return "Guest{name='" + name + "', address='" + address + "', contact='" + phone + "'}";
+    }
+
+    public String toStringDetailed() {
         return "Guest{" +
                 "guestId=" + guestId +
                 ", name='" + name + '\'' +

@@ -34,6 +34,18 @@ public class RoomType {
         this.capacity = capacity;
     }
 
+    /**
+     * Constructs a RoomType with just type name and price per night (simplified).
+     *
+     * @param typeName the name of the room type (e.g., "Single", "Double", "Suite")
+     * @param ratePerNight the cost per night for this room type (as double)
+     */
+    public RoomType(String typeName, double ratePerNight) {
+        this.typeName = typeName;
+        this.pricePerNight = BigDecimal.valueOf(ratePerNight);
+        this.capacity = 1;  // Default capacity
+    }
+
     // Getters
     public int getRoomTypeId() {
         return roomTypeId;
@@ -45,6 +57,10 @@ public class RoomType {
 
     public BigDecimal getPricePerNight() {
         return pricePerNight;
+    }
+
+    public double getRatePerNight() {
+        return pricePerNight != null ? pricePerNight.doubleValue() : 0.0;
     }
 
     public int getCapacity() {
@@ -72,6 +88,10 @@ public class RoomType {
         this.pricePerNight = pricePerNight;
     }
 
+    public void setRatePerNight(double ratePerNight) {
+        this.pricePerNight = BigDecimal.valueOf(ratePerNight);
+    }
+
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
@@ -86,13 +106,6 @@ public class RoomType {
 
     @Override
     public String toString() {
-        return "RoomType{" +
-                "roomTypeId=" + roomTypeId +
-                ", typeName='" + typeName + '\'' +
-                ", pricePerNight=" + pricePerNight +
-                ", capacity=" + capacity +
-                ", description='" + description + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+        return "RoomType{typeName='" + typeName + "', ratePerNight=" + getRatePerNight() + "}";
     }
 }

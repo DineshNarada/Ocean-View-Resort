@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 public class Bill {
     private int billId;
     private int reservationId;
+    private String reservationIdStr;  // For test support
+    private int numberOfNights;  // For test support
+    private double ratePerNight;  // For test support
     private BigDecimal subtotal;
     private BigDecimal tax;
     private BigDecimal discount;
@@ -40,6 +43,25 @@ public class Bill {
         this.discount = discount != null ? discount : BigDecimal.ZERO;
         this.paymentStatus = BillStatus.PENDING;
         calculateTotalAmount();
+    }
+
+    /**
+     * Constructs a Bill with reservation ID (String), number of nights, and rate per night.
+     * Used for simplified test scenarios.
+     *
+     * @param reservationId the string ID of the associated reservation
+     * @param numberOfNights the number of nights for the reservation
+     * @param ratePerNight the rate per night
+     */
+    public Bill(String reservationId, int numberOfNights, double ratePerNight) {
+        this.reservationIdStr = reservationId;
+        this.numberOfNights = numberOfNights;
+        this.ratePerNight = ratePerNight;
+        this.paymentStatus = BillStatus.PENDING;
+        this.subtotal = BigDecimal.valueOf(numberOfNights * ratePerNight);
+        this.tax = BigDecimal.ZERO;
+        this.discount = BigDecimal.ZERO;
+        this.totalAmount = this.subtotal;
     }
 
     /**
@@ -74,6 +96,25 @@ public class Bill {
 
     public int getReservationId() {
         return reservationId;
+    }
+
+    public String getReservationIdStr() {
+        return reservationIdStr;
+    }
+
+    public double getAmount() {
+        if (totalAmount != null) {
+            return totalAmount.doubleValue();
+        }
+        return numberOfNights * ratePerNight;
+    }
+
+    public int getNumberOfNights() {
+        return numberOfNights;
+    }
+
+    public double getRatePerNight() {
+        return ratePerNight;
     }
 
     public BigDecimal getSubtotal() {
@@ -150,6 +191,9 @@ public class Bill {
 
     @Override
     public String toString() {
+        if (reservationIdStr != null) {
+            return "Bill{reservationId='" + reservationIdStr + "', amount=" + getAmount() + ", numberOfNights=" + numberOfNights + ", ratePerNight=" + ratePerNight + "}";
+        }
         return "Bill{" +
                 "billId=" + billId +
                 ", reservationId=" + reservationId +
