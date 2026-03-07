@@ -17,122 +17,127 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
+        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); }
+        .container { margin-top: 40px; margin-bottom: 40px; }
         .page-header {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-left: 5px solid #00897b;
         }
         .page-title {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
+            color: #0d47a1;
+            font-size: 28px;
+            font-weight: 800;
         }
         .btn-new {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: 600;
+            padding: 11px 22px;
+            border-radius: 6px;
+            font-weight: 700;
             text-decoration: none;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
         }
         .btn-new:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f96 100%);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 71, 161, 0.2);
             color: white;
         }
         .table-container {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
-        .table {
-            margin: 0;
-        }
+        .table { margin: 0; }
         .table thead {
-            background-color: #667eea;
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             color: white;
         }
         .table th {
-            font-weight: 600;
-            padding: 15px;
+            font-weight: 700;
+            padding: 16px;
             border: none;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e0f2f1;
+        }
+        .table tbody tr {
+            transition: all 0.2s ease;
         }
         .table tbody tr:hover {
-            background-color: #f8f9fa;
+            background-color: #f0f9ff;
         }
         .status-badge {
-            padding: 5px 10px;
-            border-radius: 3px;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
         .status-active {
-            background-color: #d4edda;
-            color: #155724;
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            color: white;
         }
         .status-completed {
-            background-color: #d1ecf1;
-            color: #0c5460;
+            background: linear-gradient(135deg, #0277bd, #0288d1);
+            color: white;
         }
         .status-cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
+            background: linear-gradient(135deg, #c62828, #e53935);
+            color: white;
         }
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
         .btn-sm {
-            padding: 5px 10px;
+            padding: 6px 11px;
             font-size: 12px;
             border: none;
-            border-radius: 3px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
+            font-weight: 600;
         }
         .btn-edit {
-            background-color: #17a2b8;
+            background: linear-gradient(135deg, #0277bd, #0288d1);
             color: white;
         }
         .btn-edit:hover {
-            background-color: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(2, 119, 189, 0.3);
         }
         .btn-delete {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, #c62828, #e53935);
             color: white;
         }
         .btn-delete:hover {
-            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(198, 40, 40, 0.3);
         }
         .no-data {
             text-align: center;
-            padding: 40px;
-            color: #999;
+            padding: 50px;
+            color: #b0bec5;
         }
         .no-data i {
-            font-size: 48px;
+            font-size: 64px;
             margin-bottom: 20px;
             opacity: 0.5;
+            color: #b0bec5;
         }
     </style>
 </head>

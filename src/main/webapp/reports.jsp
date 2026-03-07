@@ -15,117 +15,124 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
+        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); }
+        .container { margin-top: 40px; margin-bottom: 40px; }
         .page-header {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 35px;
+            border-left: 5px solid #00897b;
         }
         .page-title {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
+            color: #0d47a1;
+            font-size: 28px;
+            font-weight: 800;
         }
         .report-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 35px;
         }
         .report-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 28px;
             text-align: center;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
+            border: 2px solid transparent;
         }
         .report-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            border-color: #00897b;
         }
         .report-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
         }
         .report-title {
-            color: #333;
+            color: #0d47a1;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 10px;
         }
         .report-description {
-            color: #999;
+            color: #757575;
             font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         .btn-report {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             color: white;
             border: none;
-            padding: 8px 20px;
-            border-radius: 5px;
+            padding: 11px 22px;
+            border-radius: 6px;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 14px;
         }
         .btn-report:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f96 100%);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 71, 161, 0.2);
         }
         .report-content {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 35px;
+            margin-top: 25px;
         }
         .report-heading {
-            color: #667eea;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 15px;
+            color: #0d47a1;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #00897b;
+            padding-bottom: 18px;
         }
         .filter-section {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 2px solid #e0f2f1;
         }
         .filter-label {
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 10px;
-            color: #333;
+            color: #0d47a1;
+            font-size: 14px;
         }
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 20px;
         }
         .data-table th {
-            background-color: #667eea;
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             color: white;
-            padding: 12px;
+            padding: 14px;
             text-align: left;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 14px;
         }
         .data-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e0f2f1;
         }
         .data-table tbody tr:hover {
-            background-color: #f8f9fa;
+            background: linear-gradient(90deg, #f0f9ff 0%, #ecfdf5 100%);
         }
+        .form-control { border: 2px solid #e0f2f1; border-radius: 6px; }
     </style>
 </head>
 <body>

@@ -15,8 +15,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,62 +25,71 @@
         }
         .error-container {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 500px;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            padding: 45px;
+            max-width: 520px;
             text-align: center;
+            border-top: 5px solid #c62828;
         }
         .error-icon {
             font-size: 80px;
-            color: #dc3545;
+            color: #c62828;
             margin-bottom: 20px;
         }
         .error-title {
-            color: #333;
+            color: #0d47a1;
             font-size: 28px;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 15px;
         }
         .error-message {
-            color: #666;
+            color: #424242;
             font-size: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             line-height: 1.6;
         }
         .error-details {
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-            color: #721c24;
+            background: linear-gradient(135deg, #ffebee 0%, #ffe0e6 100%);
+            border: 2px solid #ef5350;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            color: #c62828;
             text-align: left;
         }
+        .error-details strong {
+            display: block;
+            margin-bottom: 8px;
+        }
         .btn-action {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 6px;
             text-decoration: none;
             cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s ease;
+            font-weight: 700;
+            transition: all 0.3s ease;
             display: inline-block;
-            margin: 5px;
+            margin: 6px;
         }
         .btn-action:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f96 100%);
             transform: translateY(-2px);
             color: white;
+            box-shadow: 0 6px 16px rgba(13, 71, 161, 0.2);
         }
         .btn-secondary {
-            background-color: #6c757d;
+            background: #e0e0e0;
+            color: #424242;
         }
         .btn-secondary:hover {
-            background-color: #5a6268;
+            background: #d0d0d0;
+            color: #212121;
         }
+        hr { border-color: #e0e0e0; }
+        small a { color: #00897b; text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>

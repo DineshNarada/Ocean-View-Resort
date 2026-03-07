@@ -3,9 +3,7 @@ package com.orrs.controller;
 import com.orrs.domain.Guest;
 import com.orrs.domain.Reservation;
 import com.orrs.domain.RoomType;
-import com.orrs.domain.Staff;
 import com.orrs.manager.ReservationManager;
-import com.orrs.validator.ReservationValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +29,6 @@ import java.util.Optional;
 public class ReservationServlet extends HttpServlet {
     
     private ReservationManager reservationManager;
-    private ReservationValidator validator;
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     // Sample room types for demonstration
     private List<RoomType> sampleRoomTypes;
@@ -42,7 +37,6 @@ public class ReservationServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         reservationManager = new ReservationManager();
-        validator = new ReservationValidator();
         initializeSampleRoomTypes();
     }
     
@@ -198,7 +192,7 @@ public class ReservationServlet extends HttpServlet {
                 .orElse(sampleRoomTypes.get(0));
             
             // Add reservation
-            Reservation saved = reservationManager.addReservation(guest, roomType, checkIn, checkOut);
+            reservationManager.addReservation(guest, roomType, checkIn, checkOut);
             
             response.sendRedirect(request.getContextPath() + "/reservation?action=list");
             

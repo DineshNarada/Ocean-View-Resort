@@ -1,6 +1,5 @@
 package com.orrs.controller;
 
-import com.orrs.manager.ReservationManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,9 +9,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * ReportServlet handles report generation and display.
@@ -27,12 +23,9 @@ import java.util.Map;
 @WebServlet(name = "ReportServlet", urlPatterns = {"/report"})
 public class ReportServlet extends HttpServlet {
     
-    private ReservationManager reservationManager;
-    
     @Override
     public void init() throws ServletException {
         super.init();
-        reservationManager = new ReservationManager();
     }
     
     @Override

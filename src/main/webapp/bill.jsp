@@ -17,61 +17,60 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
+        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); }
+        .container { margin-top: 40px; margin-bottom: 40px; }
         .page-header {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            border-left: 5px solid #00897b;
         }
         .page-title {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
+            color: #0d47a1;
+            font-size: 28px;
+            font-weight: 800;
         }
         .bill-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 24px;
+            border-left: 5px solid #00897b;
+            transition: all 0.3s ease;
         }
+        .bill-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); }
         .bill-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 2px solid #e0f2f1;
         }
         .bill-id {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0d47a1;
         }
         .paid-badge {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 5px 10px;
-            border-radius: 3px;
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
         .pending-badge {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 5px 10px;
-            border-radius: 3px;
+            background: linear-gradient(135deg, #f57c00, #fb8c00);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
         .bill-details {
             display: grid;
@@ -79,59 +78,59 @@
             gap: 20px;
             margin-bottom: 20px;
         }
-        .detail-item {
-            margin-bottom: 10px;
-        }
+        .detail-item { margin-bottom: 12px; }
         .detail-label {
-            color: #999;
+            color: #757575;
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .detail-value {
-            color: #333;
-            font-size: 16px;
+            letter-spacing: 0.5px;
             font-weight: 600;
         }
-        .amount-display {
-            background-color: #f0f7ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        .amount-label {
-            color: #999;
-            font-size: 12px;
-        }
-        .amount-value {
-            color: #667eea;
-            font-size: 24px;
+        .detail-value {
+            color: #0d47a1;
+            font-size: 18px;
             font-weight: 700;
         }
+        .amount-display {
+            background: linear-gradient(135deg, #e1f5fe 0%, #e0f2f1 100%);
+            border-left: 5px solid #00897b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+        .amount-label {
+            color: #00897b;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .amount-value {
+            color: #0d47a1;
+            font-size: 32px;
+            font-weight: 800;
+        }
         .btn-action {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #00897b 100%);
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 12px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 13px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        .btn-action:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f96 100%);
-            transform: translateY(-2px);
-        }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3); }
         .no-data {
             text-align: center;
-            padding: 40px;
-            color: #999;
+            padding: 50px;
+            color: #b0bec5;
         }
         .no-data i {
-            font-size: 48px;
+            font-size: 64px;
             margin-bottom: 20px;
             opacity: 0.5;
+            color: #b0bec5;
         }
     </style>
 </head>
