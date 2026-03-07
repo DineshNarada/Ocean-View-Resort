@@ -1,48 +1,121 @@
 package com.orrs.dao;
 
-import com.orrs.dao.impl.*;
-
 /**
- * DAO Factory - Factory Pattern for creating DAO instances
- * Provides centralized access to all DAO implementations
+ * DAO Factory Pattern Implementation
+ * Provides centralized creation of DAO instances
  */
 public class DAOFactory {
     
-    // Private constructor to prevent instantiation
+    private static volatile DAOFactory instance;
+    
+    // DAO instances (lazy initialization)
+    private IReservationDAO reservationDAO;
+    private IGuestDAO guestDAO;
+    private IRoomDAO roomDAO;
+    private IRoomTypeDAO roomTypeDAO;
+    private IBillDAO billDAO;
+    private IStaffDAO staffDAO;
+    
+    /**
+     * Private constructor to prevent instantiation
+     */
     private DAOFactory() {}
+    
+    /**
+     * Get singleton instance of DAOFactory
+     */
+    public static DAOFactory getInstance() {
+        if (instance == null) {
+            synchronized (DAOFactory.class) {
+                if (instance == null) {
+                    instance = new DAOFactory();
+                }
+            }
+        }
+        return instance;
+    }
     
     /**
      * Get ReservationDAO instance
      */
-    public static IReservationDAO getReservationDAO() {
-        return new ReservationDAO();
+    public IReservationDAO getReservationDAO() {
+        if (reservationDAO == null) {
+            synchronized (this) {
+                if (reservationDAO == null) {
+                    reservationDAO = new com.orrs.dao.impl.ReservationDAO();
+                }
+            }
+        }
+        return reservationDAO;
     }
     
     /**
      * Get GuestDAO instance
      */
-    public static IGuestDAO getGuestDAO() {
-        return new GuestDAO();
+    public IGuestDAO getGuestDAO() {
+        if (guestDAO == null) {
+            synchronized (this) {
+                if (guestDAO == null) {
+                    guestDAO = new com.orrs.dao.impl.GuestDAO();
+                }
+            }
+        }
+        return guestDAO;
     }
     
     /**
      * Get RoomDAO instance
      */
-    public static IRoomDAO getRoomDAO() {
-        return new RoomDAO();
+    public IRoomDAO getRoomDAO() {
+        if (roomDAO == null) {
+            synchronized (this) {
+                if (roomDAO == null) {
+                    roomDAO = new com.orrs.dao.impl.RoomDAO();
+                }
+            }
+        }
+        return roomDAO;
     }
     
     /**
      * Get RoomTypeDAO instance
      */
-    public static IRoomTypeDAO getRoomTypeDAO() {
-        return new RoomTypeDAO();
+    public IRoomTypeDAO getRoomTypeDAO() {
+        if (roomTypeDAO == null) {
+            synchronized (this) {
+                if (roomTypeDAO == null) {
+                    roomTypeDAO = new com.orrs.dao.impl.RoomTypeDAO();
+                }
+            }
+        }
+        return roomTypeDAO;
     }
     
     /**
      * Get BillDAO instance
      */
-    public static IBillDAO getBillDAO() {
-        return new BillDAO();
+    public IBillDAO getBillDAO() {
+        if (billDAO == null) {
+            synchronized (this) {
+                if (billDAO == null) {
+                    billDAO = new com.orrs.dao.impl.BillDAO();
+                }
+            }
+        }
+        return billDAO;
+    }
+    
+    /**
+     * Get StaffDAO instance
+     */
+    public IStaffDAO getStaffDAO() {
+        if (staffDAO == null) {
+            synchronized (this) {
+                if (staffDAO == null) {
+                    staffDAO = new com.orrs.dao.impl.StaffDAO();
+                }
+            }
+        }
+        return staffDAO;
     }
 }
