@@ -71,7 +71,9 @@ public class Reservation {
      * @return the number of nights between check-in and check-out
      */
     public int getDuration() {
-        return (int) ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+        LocalDate checkInToUse = checkInDate != null ? checkInDate : checkIn;
+        LocalDate checkOutToUse = checkOutDate != null ? checkOutDate : checkOut;
+        return (int) ChronoUnit.DAYS.between(checkInToUse, checkOutToUse);
     }
 
     /**

@@ -94,12 +94,15 @@ public class Bill {
         return billId;
     }
 
-    public int getReservationId() {
+    public Object getReservationId() {
+        if (reservationIdStr != null) {
+            return reservationIdStr;
+        }
         return reservationId;
     }
 
-    public String getReservationIdStr() {
-        return reservationIdStr;
+    public int getReservationIdAsInt() {
+        return reservationId;
     }
 
     public double getAmount() {

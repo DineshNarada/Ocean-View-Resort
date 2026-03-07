@@ -23,7 +23,7 @@ public class BillDAO implements IBillDAO {
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            stmt.setInt(1, bill.getReservationId());
+            stmt.setInt(1, bill.getReservationIdAsInt());
             stmt.setBigDecimal(2, bill.getSubtotal());
             stmt.setBigDecimal(3, bill.getTax());
             stmt.setBigDecimal(4, bill.getDiscount());
@@ -80,7 +80,7 @@ public class BillDAO implements IBillDAO {
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setInt(1, bill.getReservationId());
+            stmt.setInt(1, bill.getReservationIdAsInt());
             stmt.setBigDecimal(2, bill.getSubtotal());
             stmt.setBigDecimal(3, bill.getTax());
             stmt.setBigDecimal(4, bill.getDiscount());
