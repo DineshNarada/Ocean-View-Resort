@@ -16,10 +16,12 @@ import java.util.Optional;
  */
 public class ReservationManager {
     private List<Reservation> reservations;
+    private List<Bill> bills;
     private int reservationCounter;
 
     public ReservationManager() {
         this.reservations = new ArrayList<>();
+        this.bills = new ArrayList<>();
         this.reservationCounter = 1000; // Start reservation IDs from 1000
     }
 
@@ -85,5 +87,52 @@ public class ReservationManager {
      */
     public boolean deleteReservation(String id) {
         return reservations.removeIf(res -> res.getId().equals(id));
+    }
+
+    /**
+     * Cancels a reservation by its ID (marks as cancelled).
+     *
+     * @param id the reservation ID
+     * @return true if cancellation was successful, false otherwise
+     */
+    public boolean cancelReservation(String id) {
+        Optional<Reservation> reservation = findReservation(id);
+        if (reservation.isPresent()) {
+            Reservation res = reservation.get();
+            res.setStatus(Reservation.ReservationStatus.CANCELLED);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Adds a bill to the system.
+     *
+     * @param bill the Bill object to add
+     */
+    public void addBill(Bill bill) {
+        bills.add(bill);
+    }
+
+    /**
+     * Finds a bill by reservation ID.
+     *
+     * @param reservationId the reservation ID
+     * @return an Optional containing the Bill if found, empty otherwise
+     */
+    public Optional<Bill> findBill(String reservationId) {
+        return bills.stream()
+                .filter(bill -> bill.getReservationIdStr().equals(reservationId) || 
+                               String.valueOf(bill.getReservationId()).equals(reservationId))
+                .findFirst();
+    }
+
+    /**
+     * Retrieves all bills.
+     *
+     * @return a list of all bills
+     */
+    public List<Bill> getAllBills() {
+        return new ArrayList<>(bills);
     }
 }

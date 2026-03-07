@@ -23,6 +23,21 @@ public class Guest {
     }
 
     /**
+     * Constructs a Guest with ID and basic details.
+     *
+     * @param guestId the guest's ID
+     * @param name the guest's full name
+     * @param email the guest's email address
+     * @param phone the guest's phone number
+     */
+    public Guest(int guestId, String name, String email, String phone) {
+        this.guestId = guestId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    /**
      * Constructs a Guest with the provided details.
      *
      * @param name the guest's full name

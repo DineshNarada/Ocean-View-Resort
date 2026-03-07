@@ -101,6 +101,10 @@ public class Bill {
         return reservationId;
     }
 
+    public String getReservationIdStr() {
+        return reservationIdStr;
+    }
+
     public int getReservationIdAsInt() {
         return reservationId;
     }
@@ -190,6 +194,14 @@ public class Bill {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    /**
+     * Marks the bill as paid and sets the payment date to current time.
+     */
+    public void markAsPaid() {
+        this.paymentStatus = BillStatus.PAID;
+        this.paymentDate = LocalDateTime.now();
     }
 
     @Override

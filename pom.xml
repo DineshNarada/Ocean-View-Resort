@@ -64,6 +64,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- MicroProfile OpenAPI (Swagger/OpenAPI Documentation) -->
+        <dependency>
+            <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+
     </dependencies>
 
     <!-- ===================== -->
