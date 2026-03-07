@@ -8,6 +8,7 @@ import com.orrs.manager.AuthenticationManager;
  */
 public class Staff {
     private String username;
+    @SuppressWarnings("unused")
     private String passwordHash;
     private boolean authenticated;
     private AuthenticationManager authManager;
@@ -21,7 +22,7 @@ public class Staff {
      */
     public Staff(String username, String passwordHash, AuthenticationManager authManager) {
         this.username = username;
-        this.passwordHash = passwordHash;
+        this.passwordHash = passwordHash;  // Stored for future authentication methods
         this.authManager = authManager;
         this.authenticated = false;
     }
