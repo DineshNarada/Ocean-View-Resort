@@ -42,7 +42,8 @@ public class DatabaseConnectionTest {
             
             // Test 3: List all tables
             System.out.println("[3] Listing tables in database...");
-            ResultSet tables = metadata.getTables(null, null, "%", new String[]{"TABLE"});
+            // Pass databaseName to get tables ONLY from ocean_view_resort database
+            ResultSet tables = metadata.getTables(databaseName, null, "%", new String[]{"TABLE"});
             System.out.println("   Available tables:");
             int tableCount = 0;
             while (tables.next()) {
