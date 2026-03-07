@@ -3,9 +3,31 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
    version="6.0">
+    
+    <!-- Session Configuration: 30 minutes timeout -->
     <session-config>
-        <session-timeout>
-            30
-        </session-timeout>
+        <session-timeout>30</session-timeout>
+        <tracking-mode>COOKIE</tracking-mode>
     </session-config>
+    
+    <!-- Welcome Files - Application entry point -->
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    
+    <!-- Security: Ensure login page is required for protected resources -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Protected Pages</web-resource-name>
+            <url-pattern>/dashboard</url-pattern>
+            <url-pattern>/reservation</url-pattern>
+            <url-pattern>/billing</url-pattern>
+            <url-pattern>/report</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
 </web-app>
