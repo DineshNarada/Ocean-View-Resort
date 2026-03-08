@@ -18,7 +18,7 @@ public class SMSNotifier implements ReservationObserver {
     @Override
     public void onReservationCreated(Reservation reservation) {
         String message = "Ocean View Resort: Reservation " + reservation.getId() + 
-                       " created for " + reservation.getGuest().getName() + 
+                       " created for " + (reservation.getGuest() != null ? reservation.getGuest().getName() : "Guest") + 
                        ". Check-in: " + reservation.getCheckIn().format(DATE_FORMATTER);
         sendSMS(reservation.getGuest().getPhone(), message);
     }

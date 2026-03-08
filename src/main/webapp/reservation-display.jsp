@@ -171,14 +171,14 @@
                         <% for (Reservation res : reservations) { %>
                             <tr>
                                 <td><strong><%= res.getReservationId() %></strong></td>
-                                <td><%= res.getGuest().getName() %></td>
+                                <td><%= res.getGuest() != null ? res.getGuest().getName() : "N/A" %></td>
                                 <td><%= res.getGuest().getPhone() %></td>
                                 <td><%= res.getCheckInDate() %></td>
                                 <td><%= res.getCheckOutDate() %></td>
                                 <td>
                                     <%
                                         try {
-                                            IRoomDAO roomDAO = DAOFactory.getRoomDAO();
+                                            IRoomDAO roomDAO = DAOFactory.getInstance().getRoomDAO();
                                             Room room = roomDAO.readById(res.getRoomId());
                                             out.print(room != null ? room.getRoomNumber() : "N/A");
                                         } catch (Exception e) {

@@ -17,6 +17,7 @@ public class EmailNotifier implements ReservationObserver {
     
     @Override
     public void onReservationCreated(Reservation reservation) {
+        if (reservation.getGuest() == null) return;
         String subject = "Reservation Confirmation - Ocean View Resort";
         String body = buildReservationConfirmationEmail(reservation);
         sendEmail(reservation.getGuest().getEmail(), subject, body);
@@ -24,6 +25,7 @@ public class EmailNotifier implements ReservationObserver {
     
     @Override
     public void onReservationConfirmed(Reservation reservation) {
+        if (reservation.getGuest() == null) return;
         String subject = "Reservation Confirmed - Ocean View Resort";
         String body = buildReservationConfirmedEmail(reservation);
         sendEmail(reservation.getGuest().getEmail(), subject, body);
@@ -31,6 +33,7 @@ public class EmailNotifier implements ReservationObserver {
     
     @Override
     public void onReservationCancelled(Reservation reservation, String reason) {
+        if (reservation.getGuest() == null) return;
         String subject = "Reservation Cancelled - Ocean View Resort";
         String body = buildReservationCancelledEmail(reservation, reason);
         sendEmail(reservation.getGuest().getEmail(), subject, body);
@@ -38,6 +41,7 @@ public class EmailNotifier implements ReservationObserver {
     
     @Override
     public void onCheckInReminder(Reservation reservation) {
+        if (reservation.getGuest() == null) return;
         String subject = "Check-in Reminder - Ocean View Resort";
         String body = buildCheckInReminderEmail(reservation);
         sendEmail(reservation.getGuest().getEmail(), subject, body);
@@ -47,11 +51,12 @@ public class EmailNotifier implements ReservationObserver {
      * Builds the reservation confirmation email body.
      */
     private String buildReservationConfirmationEmail(Reservation reservation) {
-        return "Dear " + reservation.getGuest().getName() + ",\n\n" +
+        String guestName = reservation.getGuest() != null ? reservation.getGuest().getName() : "Guest";
+        return "Dear " + guestName + ",\n\n" +
                "Thank you for your reservation at Ocean View Resort!\n\n" +
                "Reservation Details:\n" +
                "- Reservation ID: " + reservation.getId() + "\n" +
-               "- Guest: " + reservation.getGuest().getName() + "\n" +
+               "- Guest: " + (reservation.getGuest() != null ? reservation.getGuest().getName() : "N/A") + "\n" +
                "- Room Type: " + reservation.getRoomType().getTypeName() + "\n" +
                "- Check-in: " + reservation.getCheckIn().format(DATE_FORMATTER) + "\n" +
                "- Check-out: " + reservation.getCheckOut().format(DATE_FORMATTER) + "\n" +
@@ -65,7 +70,8 @@ public class EmailNotifier implements ReservationObserver {
      * Builds the reservation confirmed email body.
      */
     private String buildReservationConfirmedEmail(Reservation reservation) {
-        return "Dear " + reservation.getGuest().getName() + ",\n\n" +
+        String guestName = reservation.getGuest() != null ? reservation.getGuest().getName() : "Guest";
+        return "Dear " + guestName + ",\n\n" +
                "Your reservation has been confirmed!\n\n" +
                "Reservation ID: " + reservation.getId() + "\n" +
                "Check-in Date: " + reservation.getCheckIn().format(DATE_FORMATTER) + "\n" +
@@ -79,7 +85,8 @@ public class EmailNotifier implements ReservationObserver {
      * Builds the reservation cancelled email body.
      */
     private String buildReservationCancelledEmail(Reservation reservation, String reason) {
-        return "Dear " + reservation.getGuest().getName() + ",\n\n" +
+        String guestName = reservation.getGuest() != null ? reservation.getGuest().getName() : "Guest";
+        return "Dear " + guestName + ",\n\n" +
                "We confirm that your reservation has been cancelled.\n\n" +
                "Reservation ID: " + reservation.getId() + "\n" +
                "Cancellation Reason: " + reason + "\n\n" +
@@ -92,7 +99,8 @@ public class EmailNotifier implements ReservationObserver {
      * Builds the check-in reminder email body.
      */
     private String buildCheckInReminderEmail(Reservation reservation) {
-        return "Dear " + reservation.getGuest().getName() + ",\n\n" +
+        String guestName = reservation.getGuest() != null ? reservation.getGuest().getName() : "Guest";
+        return "Dear " + guestName + ",\n\n" +
                "This is a reminder that your check-in date is approaching!\n\n" +
                "Reservation ID: " + reservation.getId() + "\n" +
                "Check-in Date: " + reservation.getCheckIn().format(DATE_FORMATTER) + "\n" +

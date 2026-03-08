@@ -14,7 +14,7 @@ public class DatabaseConfig {
     private HikariDataSource dataSource;
     
     // Database Connection Properties
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/ocean_view_resort";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/ocean_view_resort?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = ""; // Change this!
     private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";

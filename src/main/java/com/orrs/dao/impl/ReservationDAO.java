@@ -1,9 +1,12 @@
 package com.orrs.dao.impl;
 
 import com.orrs.config.DatabaseConfig;
+import com.orrs.dao.DAOFactory;
 import com.orrs.dao.IReservationDAO;
+import com.orrs.dao.IGuestDAO;
 import com.orrs.domain.Reservation;
 import com.orrs.domain.RoomType;
+import com.orrs.domain.Guest;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
@@ -23,7 +26,16 @@ public class ReservationDAO implements IReservationDAO {
     public void create(Reservation reservation) throws Exception {
         // Calculate numberOfNights and totalCost using the room's type price
         long numberOfNights = java.time.temporal.ChronoUnit.DAYS.between(reservation.getCheckInDate(), reservation.getCheckOutDate());
-        RoomType roomType = getRoomTypeForRoom(reservation.getRoomId());
+        
+        // Get RoomType - use provided roomType if available, otherwise lookup by roomId
+        RoomType roomType = reservation.getRoomType();
+        if (roomType == null) {
+            if (reservation.getRoomId() <= 0) {
+                throw new Exception("Neither roomId nor roomType is set. Cannot save reservation.");
+            }
+            roomType = getRoomTypeForRoom(reservation.getRoomId());
+        }
+        
         BigDecimal totalCost = roomType.getPricePerNight().multiply(BigDecimal.valueOf(numberOfNights));
         reservation.setTotalCost(totalCost);
         
@@ -83,7 +95,16 @@ public class ReservationDAO implements IReservationDAO {
     public void update(Reservation reservation) throws Exception {
         // Recalculate numberOfNights and totalCost using room's type price for live pricing
         long numberOfNights = java.time.temporal.ChronoUnit.DAYS.between(reservation.getCheckInDate(), reservation.getCheckOutDate());
-        RoomType roomType = getRoomTypeForRoom(reservation.getRoomId());
+        
+        // Get RoomType - use provided roomType if available, otherwise lookup by roomId
+        RoomType roomType = reservation.getRoomType();
+        if (roomType == null) {
+            if (reservation.getRoomId() <= 0) {
+                throw new Exception("Neither roomId nor roomType is set. Cannot update reservation.");
+            }
+            roomType = getRoomTypeForRoom(reservation.getRoomId());
+        }
+        
         BigDecimal totalCost = roomType.getPricePerNight().multiply(BigDecimal.valueOf(numberOfNights));
         reservation.setTotalCost(totalCost);
         
@@ -264,17 +285,32 @@ public class ReservationDAO implements IReservationDAO {
     
     /**
      * Map ResultSet row to Reservation object
+     * Also fetches associated Guest object to prevent lazy loading issues
      */
     private Reservation mapResultSetToReservation(ResultSet rs) throws SQLException {
         Reservation reservation = new Reservation();
         reservation.setReservationId(rs.getInt("reservationId"));
         reservation.setReservationNumber(rs.getString("reservationNumber"));
-        reservation.setGuestId(rs.getInt("guestId"));
+        int guestId = rs.getInt("guestId");
+        reservation.setGuestId(guestId);
         reservation.setRoomId(rs.getInt("roomId"));
         reservation.setCheckInDate(rs.getDate("checkInDate").toLocalDate());
         reservation.setCheckOutDate(rs.getDate("checkOutDate").toLocalDate());
         reservation.setTotalCost(rs.getBigDecimal("totalCost"));
         reservation.setStatus(reservation.mapStatus(rs.getString("status")));
+        
+        // Load Guest object to prevent NullPointerException when accessing guest details
+        try {
+            IGuestDAO guestDAO = DAOFactory.getInstance().getGuestDAO();
+            Guest guest = guestDAO.readById(guestId);
+            if (guest != null) {
+                reservation.setGuest(guest);
+            }
+        } catch (Exception e) {
+            // Log error but don't fail - reservation data is still valid
+            System.err.println("Warning: Failed to load Guest for guestId " + guestId + ": " + e.getMessage());
+        }
+        
         return reservation;
     }
     
