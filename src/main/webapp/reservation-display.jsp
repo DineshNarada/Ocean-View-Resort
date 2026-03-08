@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="com.orrs.domain.Reservation, java.util.List"%>
+<%@page import="com.orrs.domain.Reservation, com.orrs.domain.Room, com.orrs.dao.DAOFactory, com.orrs.dao.IRoomDAO, java.util.List"%>
 <%
     String username = (String) session.getAttribute("username");
     if (username == null) {
@@ -175,7 +175,17 @@
                                 <td><%= res.getGuest().getPhone() %></td>
                                 <td><%= res.getCheckInDate() %></td>
                                 <td><%= res.getCheckOutDate() %></td>
-                                <td><%= res.getRoomTypeId() %></td>
+                                <td>
+                                    <%
+                                        try {
+                                            IRoomDAO roomDAO = DAOFactory.getRoomDAO();
+                                            Room room = roomDAO.readById(res.getRoomId());
+                                            out.print(room != null ? room.getRoomNumber() : "N/A");
+                                        } catch (Exception e) {
+                                            out.print("N/A");
+                                        }
+                                    %>
+                                </td>
                                 <td>
                                     <span class="status-badge status-active">
                                         <%= res.getStatus() %>

@@ -1,7 +1,6 @@
 package com.orrs.resources;
 
 import com.orrs.domain.Reservation;
-import com.orrs.domain.Bill;
 import com.orrs.manager.ReservationManager;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
