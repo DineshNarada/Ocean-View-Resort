@@ -1,6 +1,7 @@
 package com.orrs.controller;
 
 import com.orrs.dao.impl.RoomTypeDAO;
+import com.orrs.dao.impl.RoomTypeDAO;
 import com.orrs.domain.Guest;
 import com.orrs.domain.Reservation;
 import com.orrs.domain.RoomType;

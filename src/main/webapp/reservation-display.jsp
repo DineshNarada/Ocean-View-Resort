@@ -176,15 +176,7 @@
                                 <td><%= res.getCheckInDate() %></td>
                                 <td><%= res.getCheckOutDate() %></td>
                                 <td>
-                                    <%
-                                        try {
-                                            IRoomDAO roomDAO = DAOFactory.getInstance().getRoomDAO();
-                                            Room room = roomDAO.readById(res.getRoomId());
-                                            out.print(room != null ? room.getRoomNumber() : "N/A");
-                                        } catch (Exception e) {
-                                            out.print("N/A");
-                                        }
-                                    %>
+                                    <%= res.getRoomType() != null ? res.getRoomType().getTypeName() : "N/A" %>
                                 </td>
                                 <td>
                                     <span class="status-badge status-active">

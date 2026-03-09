@@ -293,7 +293,8 @@ public class ReservationDAO implements IReservationDAO {
         reservation.setReservationNumber(rs.getString("reservationNumber"));
         int guestId = rs.getInt("guestId");
         reservation.setGuestId(guestId);
-        reservation.setRoomId(rs.getInt("roomId"));
+        int roomId = rs.getInt("roomId");
+        reservation.setRoomId(roomId);
         reservation.setCheckInDate(rs.getDate("checkInDate").toLocalDate());
         reservation.setCheckOutDate(rs.getDate("checkOutDate").toLocalDate());
         reservation.setTotalCost(rs.getBigDecimal("totalCost"));
@@ -309,6 +310,19 @@ public class ReservationDAO implements IReservationDAO {
         } catch (Exception e) {
             // Log error but don't fail - reservation data is still valid
             System.err.println("Warning: Failed to load Guest for guestId " + guestId + ": " + e.getMessage());
+        }
+        
+        // Load RoomType object based on roomId
+        try {
+            if (roomId > 0) {
+                RoomType roomType = getRoomTypeForRoom(roomId);
+                if (roomType != null) {
+                    reservation.setRoomType(roomType);
+                }
+            }
+        } catch (Exception e) {
+            // Log error but don't fail - reservation data is still valid
+            System.err.println("Warning: Failed to load RoomType for roomId " + roomId + ": " + e.getMessage());
         }
         
         return reservation;
