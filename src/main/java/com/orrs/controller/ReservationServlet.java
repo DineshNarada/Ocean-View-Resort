@@ -1,5 +1,6 @@
 package com.orrs.controller;
 
+import com.orrs.dao.impl.RoomTypeDAO;
 import com.orrs.domain.Guest;
 import com.orrs.domain.Reservation;
 import com.orrs.domain.RoomType;
@@ -29,37 +30,26 @@ import java.util.Optional;
 public class ReservationServlet extends HttpServlet {
     
     private ReservationManager reservationManager;
-    
-    // Sample room types for demonstration
-    private List<RoomType> sampleRoomTypes;
+    private RoomTypeDAO roomTypeDAO;
     
     @Override
     public void init() throws ServletException {
         super.init();
         reservationManager = new ReservationManager();
-        initializeSampleRoomTypes();
+        roomTypeDAO = new RoomTypeDAO();
     }
     
-    private void initializeSampleRoomTypes() {
-        sampleRoomTypes = new ArrayList<>();
-        RoomType single = new RoomType();
-        single.setRoomTypeId(1);
-        single.setTypeName("Single Room");
-        single.setRatePerNight(100.0);
-        
-        RoomType double_room = new RoomType();
-        double_room.setRoomTypeId(2);
-        double_room.setTypeName("Double Room");
-        double_room.setRatePerNight(150.0);
-        
-        RoomType suite = new RoomType();
-        suite.setRoomTypeId(3);
-        suite.setTypeName("Suite");
-        suite.setRatePerNight(250.0);
-        
-        sampleRoomTypes.add(single);
-        sampleRoomTypes.add(double_room);
-        sampleRoomTypes.add(suite);
+    /**
+     * Fetch all room types from the database
+     */
+    private List<RoomType> getRoomTypes() {
+        try {
+            return roomTypeDAO.readAll();
+        } catch (Exception e) {
+            System.err.println("Error fetching room types from database: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
     @Override
@@ -86,7 +76,7 @@ public class ReservationServlet extends HttpServlet {
             }
         } else if ("new".equals(action)) {
             // Display reservation form
-            request.setAttribute("roomTypes", sampleRoomTypes);
+            request.setAttribute("roomTypes", getRoomTypes());
             request.getRequestDispatcher("/reservation-form.jsp").forward(request, response);
         } else if ("edit".equals(action)) {
             // Display edit form for existing reservation
@@ -95,7 +85,7 @@ public class ReservationServlet extends HttpServlet {
                 Optional<Reservation> reservation = reservationManager.findReservation(reservationId);
                 if (reservation.isPresent()) {
                     request.setAttribute("reservation", reservation.get());
-                    request.setAttribute("roomTypes", sampleRoomTypes);
+                    request.setAttribute("roomTypes", getRoomTypes());
                     request.getRequestDispatcher("/reservation-form.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Reservation not found");
@@ -166,7 +156,7 @@ public class ReservationServlet extends HttpServlet {
             
             if (!errors.isEmpty()) {
                 request.setAttribute("errors", errors);
-                request.setAttribute("roomTypes", sampleRoomTypes);
+                request.setAttribute("roomTypes", getRoomTypes());
                 request.getRequestDispatcher("/reservation-form.jsp").forward(request, response);
                 return;
             }
@@ -178,18 +168,19 @@ public class ReservationServlet extends HttpServlet {
             if (checkOut.isBefore(checkIn) || checkOut.equals(checkIn)) {
                 errors.add("Check-out date must be after check-in date");
                 request.setAttribute("errors", errors);
-                request.setAttribute("roomTypes", sampleRoomTypes);
+                request.setAttribute("roomTypes", getRoomTypes());
                 request.getRequestDispatcher("/reservation-form.jsp").forward(request, response);
                 return;
             }
             
-            // Create guest and get room type
+            // Create guest and get room type from database
             Guest guest = new Guest(guestName, guestEmail, guestPhone, guestAddress, guestCity, guestCountry);
             int roomTypeId = Integer.parseInt(roomTypeIdStr);
-            RoomType roomType = sampleRoomTypes.stream()
-                .filter(rt -> rt.getRoomTypeId() == roomTypeId)
-                .findFirst()
-                .orElse(sampleRoomTypes.get(0));
+            RoomType roomType = roomTypeDAO.readById(roomTypeId);
+            
+            if (roomType == null) {
+                throw new Exception("Invalid room type selected");
+            }
             
             // Add reservation
             reservationManager.addReservation(guest, roomType, checkIn, checkOut);
