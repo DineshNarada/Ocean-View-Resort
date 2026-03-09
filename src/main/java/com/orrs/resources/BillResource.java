@@ -3,7 +3,7 @@ package com.orrs.resources;
 import com.orrs.dao.DAOFactory;
 import com.orrs.dao.IBillDAO;
 import com.orrs.domain.Bill;
-import com.orrs.domain.BillStatus;
+import com.orrs.domain.Bill.BillStatus;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -29,7 +29,7 @@ public class BillResource {
     @POST
     public Response createBill(Bill bill) {
         try {
-            if (bill == null || bill.getReservationId() <= 0) {
+            if (bill == null || bill.getReservationIdAsInt() <= 0) {
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse("Reservation ID is required"))
                     .build();
