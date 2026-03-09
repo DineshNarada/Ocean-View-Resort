@@ -34,15 +34,27 @@ public class ReservationManager {
     /**
      * Adds a new reservation to the system.
      * Persists both guest and reservation to the database.
+     * Automatically assigns an available room of the specified type.
      *
      * @param guest the guest information
      * @param roomType the room type for the reservation
      * @param checkIn the check-in date
      * @param checkOut the check-out date
      * @return the created Reservation object
-     * @throws Exception if database operation fails
+     * @throws Exception if database operation fails or no rooms available
      */
     public Reservation addReservation(Guest guest, RoomType roomType, LocalDate checkIn, LocalDate checkOut) throws Exception {
+        // Validate room type
+        if (roomType == null || roomType.getRoomTypeId() <= 0) {
+            throw new Exception("Invalid room type provided");
+        }
+        
+        // Find an available room of this type for the given dates
+        List<Integer> availableRoomIds = reservationDAO.findAvailableRoomsByType(roomType.getRoomTypeId(), checkIn, checkOut);
+        if (availableRoomIds.isEmpty()) {
+            throw new Exception("No available rooms of type " + roomType.getTypeName() + " for the selected dates");
+        }
+        
         // Save guest to database first
         guestDAO.create(guest);
         
@@ -54,6 +66,7 @@ public class ReservationManager {
         reservation.setGuestId(guest.getGuestId());
         reservation.setGuest(guest);
         reservation.setRoomType(roomType);
+        reservation.setRoomId(availableRoomIds.get(0)); // Assign first available room
         reservation.setCheckInDate(checkIn);
         reservation.setCheckOutDate(checkOut);
         reservation.setStatus(Reservation.ReservationStatus.CONFIRMED);

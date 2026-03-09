@@ -51,6 +51,7 @@ class ReservationManagerTest {
         guest = new Guest("John Doe", "123 Main St", "555-1234");
         guest.setGuestId(1);
         roomType = new RoomType("Single", 5000.0);
+        roomType.setRoomTypeId(1);  // Set room type ID for mocking
         checkIn = LocalDate.of(2026, 3, 10);
         checkOut = LocalDate.of(2026, 3, 12);
         
@@ -85,7 +86,13 @@ class ReservationManagerTest {
     @Test
     void testAddReservation() throws Exception {
         // Arrange
+        List<Integer> availableRooms = new ArrayList<>();
+        availableRooms.add(1);  // Mock available room ID
+        
         doNothing().when(guestDAO).create(any(Guest.class));
+        when(reservationDAO.findAvailableRoomsByType(
+            roomType.getRoomTypeId(), checkIn, checkOut
+        )).thenReturn(availableRooms);
         doNothing().when(reservationDAO).create(any(Reservation.class));
         
         // Act
@@ -97,6 +104,7 @@ class ReservationManagerTest {
         assertEquals(roomType, reservation.getRoomType());
         assertEquals(checkIn, reservation.getCheckInDate());
         assertEquals(checkOut, reservation.getCheckOutDate());
+        assertEquals(1, reservation.getRoomId());  // Verify room ID was set
         verify(guestDAO, times(1)).create(guest);
         verify(reservationDAO, times(1)).create(any(Reservation.class));
     }
