@@ -1,79 +1,49 @@
 package com.orrs.resources;
 
+import com.orrs.dao.DAOFactory;
+import com.orrs.dao.IBillDAO;
 import com.orrs.domain.Bill;
-import com.orrs.manager.ReservationManager;
+import com.orrs.domain.BillStatus;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * REST Resource for bill operations
- * Endpoints: GET, POST /resources/bills
+ * Endpoints: GET, POST, PUT, DELETE /resources/bills
+ * Uses BillDAO for database operations
  */
 @Path("bills")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BillResource {
     
-    private static ReservationManager reservationManager = new ReservationManager();
+    private final IBillDAO billDAO = DAOFactory.getInstance().getBillDAO();
     
     /**
-     * Get bill for a specific reservation
-     * GET /api/bills/{reservationId}
+     * Create a new bill
+     * POST /api/bills
      */
-    @GET
-    @Path("{reservationId}")
-    public Response getBill(@PathParam("reservationId") String reservationId) {
+    @POST
+    public Response createBill(Bill bill) {
         try {
-            if (reservationId == null || reservationId.isEmpty()) {
+            if (bill == null || bill.getReservationId() <= 0) {
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse("Reservation ID is required"))
                     .build();
             }
             
-            Optional<Bill> bill = reservationManager.findBill(reservationId);
-            
-            if (bill.isPresent()) {
-                return Response.ok(new BillResponse(bill.get()))
-                    .build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new ErrorResponse("Bill not found for this reservation"))
-                    .build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ErrorResponse("Error retrieving bill: " + e.getMessage()))
-                .build();
-        }
-    }
-    
-    /**
-     * Create a bill for a reservation
-     * POST /api/bills
-     */
-    @POST
-    public Response createBill(CreateBillRequest request) {
-        try {
-            if (request == null || !isValidRequest(request)) {
+            if (bill.getSubtotal() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse("Invalid bill data"))
+                    .entity(new ErrorResponse("Subtotal is required"))
                     .build();
             }
             
-            Bill bill = new Bill(
-                Integer.parseInt(request.getReservationId()),
-                new BigDecimal(request.getSubtotal()),
-                new BigDecimal(request.getTax() != null ? request.getTax() : "0"),
-                new BigDecimal(request.getDiscount() != null ? request.getDiscount() : "0")
-            );
-            
-            reservationManager.addBill(bill);
-            
+            billDAO.create(bill);
             return Response.status(Response.Status.CREATED)
-                .entity(new BillResponse(bill))
+                .entity(bill)
                 .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -83,131 +53,153 @@ public class BillResource {
     }
     
     /**
-     * Mark bill as paid
-     * PUT /api/bills/{reservationId}/pay
+     * Get bill by ID
+     * GET /api/bills/{id}
      */
-    @PUT
-    @Path("{reservationId}/pay")
-    public Response payBill(@PathParam("reservationId") String reservationId, PaymentRequest paymentRequest) {
+    @GET
+    @Path("{id}")
+    public Response getBill(@PathParam("id") int id) {
         try {
-            if (reservationId == null || reservationId.isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse("Reservation ID is required"))
-                    .build();
-            }
+            Bill bill = billDAO.readById(id);
             
-            Optional<Bill> bill = reservationManager.findBill(reservationId);
-            
-            if (!bill.isPresent()) {
+            if (bill == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                     .entity(new ErrorResponse("Bill not found"))
                     .build();
             }
             
-            Bill existingBill = bill.get();
-            
-            if (paymentRequest.getAmountPaid() != null) {
-                BigDecimal amount = new BigDecimal(paymentRequest.getAmountPaid());
-                if (amount.compareTo(existingBill.getTotalAmount()) < 0) {
-                    return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Payment amount is less than bill amount"))
-                        .build();
-                }
+            return Response.ok(bill).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Error retrieving bill: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    /**
+     * Get all bills
+     * GET /api/bills
+     */
+    @GET
+    public Response getAllBills() {
+        try {
+            List<Bill> bills = billDAO.readAll();
+            return Response.ok(bills).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Error retrieving bills: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    /**
+     * Update bill
+     * PUT /api/bills/{id}
+     */
+    @PUT
+    @Path("{id}")
+    public Response updateBill(@PathParam("id") int id, Bill bill) {
+        try {
+            if (bill == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Bill data is required"))
+                    .build();
             }
             
-            existingBill.markAsPaid();
+            bill.setBillId(id);
+            billDAO.update(bill);
             
-            return Response.ok(new BillResponse(existingBill))
+            return Response.ok(new SuccessResponse("Bill updated successfully")).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Error updating bill: " + e.getMessage()))
                 .build();
+        }
+    }
+    
+    /**
+     * Delete bill
+     * DELETE /api/bills/{id}
+     */
+    @DELETE
+    @Path("{id}")
+    public Response deleteBill(@PathParam("id") int id) {
+        try {
+            billDAO.delete(id);
+            return Response.ok(new SuccessResponse("Bill deleted successfully")).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Error deleting bill: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    /**
+     * Get bill by reservation ID
+     * GET /api/bills/reservation/{reservationId}
+     */
+    @GET
+    @Path("reservation/{reservationId}")
+    public Response getBillByReservationId(@PathParam("reservationId") int reservationId) {
+        try {
+            Bill bill = billDAO.findByReservationId(reservationId);
+            
+            if (bill == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ErrorResponse("Bill not found for this reservation"))
+                    .build();
+            }
+            
+            return Response.ok(bill).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Error retrieving bill: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    /**
+     * Get all unpaid bills
+     * GET /api/bills/unpaid
+     */
+    @GET
+    @Path("unpaid")
+    public Response getUnpaidBills() {
+        try {
+            List<Bill> unpaidBills = billDAO.findUnpaidBills();
+            return Response.ok(unpaidBills).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Error retrieving unpaid bills: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    /**
+     * Mark bill as paid
+     * PUT /api/bills/{id}/pay
+     */
+    @PUT
+    @Path("{id}/pay")
+    public Response payBill(@PathParam("id") int id) {
+        try {
+            Bill bill = billDAO.readById(id);
+            
+            if (bill == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ErrorResponse("Bill not found"))
+                    .build();
+            }
+            
+            bill.setPaymentStatus(BillStatus.PAID);
+            bill.setPaymentDate(LocalDateTime.now());
+            billDAO.update(bill);
+            
+            return Response.ok(new SuccessResponse("Bill marked as paid")).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(new ErrorResponse("Error processing payment: " + e.getMessage()))
                 .build();
         }
-    }
-    
-    private boolean isValidRequest(CreateBillRequest request) {
-        return request.getReservationId() != null && !request.getReservationId().isEmpty()
-            && request.getSubtotal() != null && !request.getSubtotal().isEmpty();
-    }
-    
-    // ==================== DTOs ====================
-    
-    public static class CreateBillRequest {
-        private String reservationId;
-        private String subtotal;
-        private String tax;
-        private String discount;
-        
-        public CreateBillRequest() {}
-        
-        public String getReservationId() { return reservationId; }
-        public void setReservationId(String reservationId) { this.reservationId = reservationId; }
-        
-        public String getSubtotal() { return subtotal; }
-        public void setSubtotal(String subtotal) { this.subtotal = subtotal; }
-        
-        public String getTax() { return tax; }
-        public void setTax(String tax) { this.tax = tax; }
-        
-        public String getDiscount() { return discount; }
-        public void setDiscount(String discount) { this.discount = discount; }
-    }
-    
-    public static class PaymentRequest {
-        private String amountPaid;
-        private String paymentMethod;
-        
-        public PaymentRequest() {}
-        
-        public String getAmountPaid() { return amountPaid; }
-        public void setAmountPaid(String amountPaid) { this.amountPaid = amountPaid; }
-        
-        public String getPaymentMethod() { return paymentMethod; }
-        public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
-    }
-    
-    public static class BillResponse {
-        private int billId;
-        private String reservationId;
-        private String subtotal;
-        private String tax;
-        private String discount;
-        private String totalAmount;
-        private String paymentStatus;
-        
-        public BillResponse() {}
-        
-        public BillResponse(Bill bill) {
-            this.billId = bill.getBillId();
-            this.reservationId = bill.getReservationIdStr() != null ? bill.getReservationIdStr() : String.valueOf(bill.getReservationId());
-            this.subtotal = bill.getSubtotal() != null ? bill.getSubtotal().toString() : "0";
-            this.tax = bill.getTax() != null ? bill.getTax().toString() : "0";
-            this.discount = bill.getDiscount() != null ? bill.getDiscount().toString() : "0";
-            this.totalAmount = bill.getTotalAmount() != null ? bill.getTotalAmount().toString() : "0";
-            this.paymentStatus = bill.getPaymentStatus() != null ? bill.getPaymentStatus().toString() : "PENDING";
-        }
-        
-        public int getBillId() { return billId; }
-        public String getReservationId() { return reservationId; }
-        public String getSubtotal() { return subtotal; }
-        public String getTax() { return tax; }
-        public String getDiscount() { return discount; }
-        public String getTotalAmount() { return totalAmount; }
-        public String getPaymentStatus() { return paymentStatus; }
-    }
-    
-    public static class ErrorResponse {
-        private String error;
-        private long timestamp;
-        
-        public ErrorResponse() {}
-        public ErrorResponse(String error) {
-            this.error = error;
-            this.timestamp = System.currentTimeMillis();
-        }
-        
-        public String getError() { return error; }
-        public long getTimestamp() { return timestamp; }
     }
 }
