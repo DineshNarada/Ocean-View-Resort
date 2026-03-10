@@ -14,7 +14,24 @@ import java.io.IOException;
 /**
  * LoginServlet handles user authentication and session creation.
  * 
- * Processes login requests, validates credentials, and creates sessions.
+ * REFACTORED: Now implements dynamic, database-driven authentication
+ * - Validates credentials against Staff table in database
+ * - Retrieves full Staff object with ID and role information
+ * - Creates session with authenticated staff from database
+ * 
+ * DATA FLOW:
+ * 1. Request arrives with username/password (from login.jsp)
+ * 2. AuthenticationManager queries StaffDAO for staff by username
+ * 3. StaffDAO retrieves Staff from database with all properties
+ * 4. Password hash is verified against database hash
+ * 5. On success: Full Staff object stored in session
+ * 
+ * SEPARATION OF CONCERNS:
+ * - LoginServlet: HTTP request/response handling
+ * - AuthenticationManager: Authentication logic
+ * - StaffDAO: Database queries
+ * - Staff domain: Data model
+ * 
  * Routes authenticated users to the dashboard.
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
@@ -60,34 +77,39 @@ public class LoginServlet extends HttpServlet {
         }
         
         try {
-            // Authenticate user
-            boolean authenticated = authManager.authenticate(username, password);
+            // ============================================================
+            // REFACTORED: Dynamic Database-Driven Authentication
+            // ============================================================
+            // Authenticate user against database via AuthenticationManager
+            // Returns Staff object with ID and full details from database
+            Staff authenticatedStaff = authManager.authenticate(username, password);
             
-            if (authenticated) {
-                // Create staff object
-                Staff staff = new Staff();
-                staff.setUsername(username);
-                staff.setFullName("Staff Member - " + username);
-                
-                // Create servlet session
+            if (authenticatedStaff != null) {
+                // ============================================================
+                // SUCCESS: User authenticated - Create session with db staff
+                // ============================================================
+                // Create servlet session with authenticated Staff from database
                 HttpSession httpSession = request.getSession(true);
-                httpSession.setAttribute("staff", staff);
-                httpSession.setAttribute("username", username);
+                httpSession.setAttribute("staff", authenticatedStaff);
+                httpSession.setAttribute("username", authenticatedStaff.getUsername());
+                httpSession.setAttribute("staffId", authenticatedStaff.getStaffId());
                 httpSession.setMaxInactiveInterval(30 * 60); // 30 minutes
                 
-                // Create application session
-                String sessionToken = sessionManager.createSession(staff);
+                // Create application session with database staff
+                String sessionToken = sessionManager.createSession(authenticatedStaff);
                 httpSession.setAttribute("sessionToken", sessionToken);
                 
                 // Redirect to dashboard
                 response.sendRedirect(request.getContextPath() + "/dashboard");
             } else {
-                // Authentication failed
+                // ============================================================
+                // FAILURE: Invalid credentials (not found or wrong password)
+                // ============================================================
                 request.setAttribute("error", "Invalid username or password");
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
             }
         } catch (Exception e) {
-            request.setAttribute("error", "An error occurred during login");
+            request.setAttribute("error", "An error occurred during login: " + e.getMessage());
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }

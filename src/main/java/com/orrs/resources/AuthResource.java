@@ -1,5 +1,6 @@
 package com.orrs.resources;
 
+import com.orrs.domain.Staff;
 import com.orrs.manager.AuthenticationManager;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -8,6 +9,10 @@ import jakarta.ws.rs.core.Response;
 /**
  * REST Resource for authentication (login/logout)
  * Endpoints: POST /resources/auth/login, POST /resources/auth/logout
+ * 
+ * REFACTORED: Now uses database-driven authentication.
+ * AuthenticationManager.authenticate() returns Staff object or null
+ * instead of boolean.
  */
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -20,6 +25,9 @@ public class AuthResource {
     /**
      * Login endpoint
      * POST /api/auth/login
+     * 
+     * REFACTORED: Now queries database for staff authentication
+     * 
      * @param credentials JSON with username and password
      * @return Response with session token if successful
      */
@@ -33,17 +41,29 @@ public class AuthResource {
                     .build();
             }
             
-            if (authManager.authenticate(credentials.getUsername(), credentials.getPassword())) {
+            // REFACTORED: Authenticate against database via AuthenticationManager
+            // Returns Staff object if successful, null otherwise
+            Staff authenticatedStaff = authManager.authenticate(
+                credentials.getUsername(), 
+                credentials.getPassword()
+            );
+            
+            if (authenticatedStaff != null) {
+                // Authentication successful - create session with full staff details
                 String sessionId = generateSessionId();
                 LoginResponse response = new LoginResponse(
                     "Authentication successful",
                     sessionId,
-                    credentials.getUsername()
+                    authenticatedStaff.getUsername(),
+                    authenticatedStaff.getStaffId(),
+                    authenticatedStaff.getFullName(),
+                    authenticatedStaff.getRole() != null ? authenticatedStaff.getRole().toString() : "STAFF"
                 );
                 return Response.ok(response).build();
             } else {
+                // Authentication failed - invalid credentials or inactive user
                 return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(new ErrorResponse("Invalid credentials"))
+                    .entity(new ErrorResponse("Invalid credentials or account is inactive"))
                     .build();
             }
         } catch (Exception e) {
@@ -56,6 +76,10 @@ public class AuthResource {
     /**
      * Logout endpoint
      * POST /api/auth/logout
+     * 
+     * REFACTORED: Now part of database-driven authentication system
+     * 
+     * @param sessionId Session ID from X-Session-ID header
      * @return Response confirming logout
      */
     @POST
@@ -69,6 +93,8 @@ public class AuthResource {
             }
             
             // Invalidate session (in production, remove from session manager)
+            // This complements the database-driven authentication by clearing
+            // any session tokens or cached authentication state
             return Response.ok(new SuccessResponse("Logged out successfully"))
                 .build();
         } catch (Exception e) {
@@ -110,11 +136,15 @@ public class AuthResource {
     
     /**
      * Login response DTO
+     * REFACTORED: Now includes full staff details from database
      */
     public static class LoginResponse {
         private String message;
         private String sessionId;
         private String username;
+        private int staffId;
+        private String fullName;
+        private String role;
         
         public LoginResponse() {}
         
@@ -124,9 +154,23 @@ public class AuthResource {
             this.username = username;
         }
         
+        // Constructor with full staff details
+        public LoginResponse(String message, String sessionId, String username, 
+                           int staffId, String fullName, String role) {
+            this.message = message;
+            this.sessionId = sessionId;
+            this.username = username;
+            this.staffId = staffId;
+            this.fullName = fullName;
+            this.role = role;
+        }
+        
         public String getMessage() { return message; }
         public String getSessionId() { return sessionId; }
         public String getUsername() { return username; }
+        public int getStaffId() { return staffId; }
+        public String getFullName() { return fullName; }
+        public String getRole() { return role; }
     }
     
     /**

@@ -5,6 +5,10 @@ import com.orrs.manager.AuthenticationManager;
 /**
  * Represents a staff member who interacts with the Ocean View Resort reservation system.
  * Contains credentials and login functionality.
+ * 
+ * REFACTORED: Now works with database-driven authentication.
+ * Login method verifies credentials against database via AuthenticationManager.
+ * Authentication is no longer hardcoded; it comes from the Staff table.
  */
 public class Staff {
     private String username;
@@ -14,31 +18,42 @@ public class Staff {
     private AuthenticationManager authManager;
 
     /**
-     * Constructs a Staff member with credentials.
+     * Constructs a Staff member with credentials and authentication manager.
      *
      * @param username the staff member's username
      * @param passwordHash the hashed password for security
-     * @param authManager the authentication manager for login verification
+     * @param authManager the authentication manager for database-driven login verification
      */
     public Staff(String username, String passwordHash, AuthenticationManager authManager) {
         this.username = username;
-        this.passwordHash = passwordHash;  // Stored for future authentication methods
+        this.passwordHash = passwordHash;  // Stored for reference
         this.authManager = authManager;
         this.authenticated = false;
     }
 
     /**
      * Attempts to log in the staff member.
+     * REFACTORED: Now validates against database credentials.
      *
-     * @param password the plaintext password to verify
-     * @return true if authentication succeeds, false otherwise
+     * @param password the plaintext password to verify against database
+     * @return true if authentication succeeds (staff found with matching password), false otherwise
      */
     public boolean login(String password) {
-        if (authManager.authenticate(username, password)) {
-            this.authenticated = true;
-            return true;
+        try {
+            // REFACTORED: authenticate() now queries database and returns Staff object
+            // If Staff is returned (not null), authentication succeeded
+            com.orrs.domain.Staff authenticatedStaff = authManager.authenticate(username, password);
+            
+            if (authenticatedStaff != null) {
+                this.authenticated = true;
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            // Log error in production
+            System.err.println("Login error: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     /**

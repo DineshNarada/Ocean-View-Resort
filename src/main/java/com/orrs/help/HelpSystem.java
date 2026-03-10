@@ -3,11 +3,22 @@ package com.orrs.help;
 /**
  * Provides help and guidelines for staff members using the Ocean View Resort system.
  * Displays system usage instructions and feature descriptions.
+ * 
+ * REFACTORED: Credentials and room rates now dynamically retrieved from database.
+ * No longer contains hardcoded demo credentials or room rates.
+ * 
+ * DATA LAYER: Help text now references dynamic data stored in database
+ * - Staff credentials managed through admin panel
+ * - Room rates retrieved from RoomType table in database
+ * - All help information consistent with live database
  */
 public class HelpSystem {
 
     /**
      * Displays the help documentation for the reservation system.
+     * 
+     * NOTE: All credentials and pricing now come from the database.
+     * Contact your system administrator for staff access credentials.
      */
     public static void displayHelp() {
         System.out.println("\n========== OCEAN VIEW RESORT - HELP SECTION ==========");
@@ -20,7 +31,8 @@ public class HelpSystem {
         System.out.println("MAIN MENU OPTIONS:");
         System.out.println("1. Login");
         System.out.println("   - Secure access to the system using your staff credentials");
-        System.out.println("   - Username: admin | Password: password123 (for demo)");
+        System.out.println("   - REFACTORED: Credentials are stored securely in the database");
+        System.out.println("   - Contact your system administrator if you need access credentials");
         System.out.println();
 
         System.out.println("2. Add New Reservation");
@@ -29,7 +41,7 @@ public class HelpSystem {
         System.out.println("     * Guest Name");
         System.out.println("     * Guest Address");
         System.out.println("     * Contact Number");
-        System.out.println("     * Room Type (Single, Double, Suite)");
+        System.out.println("     * Room Type (retrieved from database)");
         System.out.println("     * Check-in Date (YYYY-MM-DD)");
         System.out.println("     * Check-out Date (YYYY-MM-DD)");
         System.out.println("   - A unique Reservation Number will be automatically generated");
@@ -48,7 +60,7 @@ public class HelpSystem {
 
         System.out.println("4. Calculate and Print Bill");
         System.out.println("   - Compute the total stay cost for a reservation");
-        System.out.println("   - Bill calculation: Duration (nights) × Rate per Night");
+        System.out.println("   - Bill calculation: Duration (nights) × Rate per Night (from database)");
         System.out.println("   - Select a reservation to generate and print the bill");
         System.out.println();
 
@@ -62,9 +74,9 @@ public class HelpSystem {
         System.out.println();
 
         System.out.println("ROOM RATES (Nightly):");
-        System.out.println("   * Single Room: Rs. 5,000");
-        System.out.println("   * Double Room: Rs. 7,500");
-        System.out.println("   * Suite: Rs. 12,000");
+        System.out.println("   * Please view the current rates in the system dashboard");
+        System.out.println("   * REFACTORED: Room rates are now dynamically retrieved from RoomType table");
+        System.out.println("   * Contact management for any rate changes");
         System.out.println();
 
         System.out.println("TIPS FOR STAFF:");
@@ -72,6 +84,7 @@ public class HelpSystem {
         System.out.println("- Check-out date must be after check-in date");
         System.out.println("- Reservation IDs are auto-generated and unique");
         System.out.println("- Keep guest information confidential");
+        System.out.println("- All data is persisted in the secure database");
         System.out.println("- Contact the supervisor if you encounter issues");
         System.out.println();
         System.out.println("======================================================\n");
@@ -86,6 +99,7 @@ public class HelpSystem {
         System.out.println("2. Double-check dates to avoid booking conflicts");
         System.out.println("3. Offer special room discounts if applicable");
         System.out.println("4. Welcome guests warmly and professionally");
+        System.out.println("5. Remember: All staff credentials and room data come from the database");
         System.out.println("-----------------\n");
     }
 }
