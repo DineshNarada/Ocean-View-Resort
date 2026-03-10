@@ -4,15 +4,19 @@ import com.orrs.dao.DAOFactory;
 import com.orrs.dao.IBillDAO;
 import com.orrs.dao.IGuestDAO;
 import com.orrs.dao.IReservationDAO;
+import com.orrs.dao.IRoomDAO;
+import com.orrs.dao.IRoomTypeDAO;
 import com.orrs.domain.Reservation;
 import com.orrs.domain.Guest;
 import com.orrs.domain.RoomType;
+import com.orrs.domain.Room;
 import com.orrs.domain.Bill;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Manages reservation operations for the Ocean View Resort system.
@@ -110,18 +114,68 @@ public class ReservationManager {
     }
 
     /**
+     * Enriches a reservation with room type information if missing.
+     * Works around DAO persistence issues by ensuring RoomType is available for billing.
+     *
+     * @param reservation the reservation to enrich
+     * @return the enriched reservation with validated RoomType
+     */
+    private Reservation enrichReservationWithRoomType(Reservation reservation) {
+        if (reservation == null) {
+            return reservation;
+        }
+        
+        // If RoomType is already set, return as-is
+        if (reservation.getRoomType() != null) {
+            return reservation;
+        }
+        
+        // If roomId > 0, try to fetch room and room type from database
+        if (reservation.getRoomId() > 0) {
+            try {
+                IRoomDAO roomDAO = DAOFactory.getInstance().getRoomDAO();
+                Room room = roomDAO.readById(reservation.getRoomId());
+                
+                if (room != null && room.getRoomTypeId() > 0) {
+                    IRoomTypeDAO roomTypeDAO = DAOFactory.getInstance().getRoomTypeDAO();
+                    RoomType roomType = roomTypeDAO.readById(room.getRoomTypeId());
+                    if (roomType != null) {
+                        reservation.setRoomType(roomType);
+                        return reservation;
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Warning: Could not enrich reservation with room type: " + e.getMessage());
+            }
+        }
+        
+        // Return as-is if enrichment failed
+        return reservation;
+    }
+
+    /**
      * Calculates the bill for a specific reservation.
      *
      * @param reservationId the ID of the reservation
      * @return a Bill object, or null if reservation not found
-     * @throws Exception if database operation fails
+     * @throws Exception if database operation fails or cannot resolve room pricing
      */
     public Bill calculateBill(String reservationId) throws Exception {
         Optional<Reservation> reservation = findReservation(reservationId);
         if (reservation.isPresent()) {
-            Reservation res = reservation.get();
+            Reservation res = enrichReservationWithRoomType(reservation.get());
+            
+            // Get RoomType
+            RoomType roomType = res.getRoomType();
+            
+            // If still null, cannot calculate bill
+            if (roomType == null) {
+                throw new Exception("Cannot calculate bill for reservation " + reservationId + 
+                                  ": Room type information is missing. RoomId=" + res.getRoomId());
+            }
+            
             int duration = res.getDuration();
-            double rate = res.getRoomType().getRatePerNight();
+            double rate = roomType.getRatePerNight();
             return new Bill(reservationId, duration, rate);
         }
         return null;
@@ -129,12 +183,17 @@ public class ReservationManager {
 
     /**
      * Retrieves all reservations from the database.
+     * Enriches them with room type information for billing purposes.
      *
-     * @return a list of all reservations
+     * @return a list of all reservations with room type information populated
      * @throws Exception if database operation fails
      */
     public List<Reservation> getAllReservations() throws Exception {
-        return reservationDAO.readAll();
+        List<Reservation> reservations = reservationDAO.readAll();
+        // Enrich each reservation with room type info for billing
+        return reservations.stream()
+                .map(this::enrichReservationWithRoomType)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
